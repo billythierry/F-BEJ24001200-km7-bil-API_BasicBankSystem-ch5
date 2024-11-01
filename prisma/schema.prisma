@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  password     String
+  profile      Profiles?  // One-to-One Profile
+  bankAccounts BankAccounts[] // One-to-Many BankAccount
+}
+
+model Profiles {
+  id             Int     @id @default(autoincrement())
+  userId         Int     @unique
+  identity_type  String
+  identity_number String
+  address        String
+  user           Users    @relation(fields: [userId], references: [id], onDelete: Cascade) // One-to-One User
+}
+
+model BankAccounts {
+  id               Int           @id @default(autoincrement())
+  userId           Int
+  bank_name        String
+  bank_account_number String     @unique
+  balance          Float
+  user             Users          @relation(fields: [userId], references: [id])  // Many-to-One User
+  sourceTransactions Transactions[] @relation("SourceAccount")
+  destinationTransactions Transactions[] @relation("DestinationAccount")
+}
+
+model Transactions {
+  id                  Int          @id @default(autoincrement())
+  source_account_id    Int
+  destination_account_id Int
+  amount              Float
+  sourceAccount       BankAccounts @relation("SourceAccount", fields: [source_account_id], references: [id])
+  destinationAccount  BankAccounts @relation("DestinationAccount", fields: [destination_account_id], references: [id])
+}

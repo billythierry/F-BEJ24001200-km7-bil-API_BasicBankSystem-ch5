@@ -1,0 +1,11 @@
+{
+    "name": "Anto Kewer",
+    "email": "bijianto12@gmail.com",
+    "password": "password123",
+    "profile": {
+      "identity_type": "KTP",
+      "identity_number": "5432187654",
+      "address": "Makassar"
+    }
+  }
+  
